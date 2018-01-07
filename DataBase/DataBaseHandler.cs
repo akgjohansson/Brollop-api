@@ -28,10 +28,10 @@ namespace DataBase
 
         public DataBaseHandler(string connectionString)
         {
-            Databasename = "Brollop";
+            Databasename = "DB_A2AF2E_brollop";
             if (string.IsNullOrWhiteSpace(connectionString))
-                //ConnectionString = @"Data Source=SQL6002.site4now.net;Initial Catalog=DB_A2AF2E_gotaelves;";
-                ConnectionString = @"Server = (localdb)\mssqllocaldb; Database = Brollop;";
+                ConnectionString = @"Data Source=SQL6003.site4now.net;Initial Catalog=DB_A2AF2E_brollop;";
+                //ConnectionString = @"Server = (localdb)\mssqllocaldb; Database = Brollop;";
             else
                 ConnectionString = connectionString;
             Session = OpenSession();
@@ -44,13 +44,13 @@ namespace DataBase
             bool doesDBExist = false;
             //var constr = ConfigurationManager.ConnectionStrings["MyDbConn"].ToString();
             var password = new SecureString();
-            foreach (char character in "GotaElvesJ11")
+            foreach (char character in "JA19maj-pass")
             {
                 password.AppendChar(character);
             }
             password.MakeReadOnly();
-            //var credentials = new SqlCredential("DB_A2AF2E_gotaelves_admin", password);
-            using (SqlConnection con = new SqlConnection(ConnectionString))//, credentials))
+            var credentials = new SqlCredential("DB_A2AF2E_brollop_admin", password);
+            using (SqlConnection con = new SqlConnection(ConnectionString, credentials))
             {
                 using (SqlCommand com = new SqlCommand($"select name from sys.databases where name = '{Databasename}';", con))
                 {
@@ -84,8 +84,8 @@ namespace DataBase
                            .DataBaseIntegration(db =>
                            {
 
-                               db.ConnectionString = ConnectionString + " Trusted_Connection = True;";
-                               //db.ConnectionString = ConnectionString + "User Id=DB_A2AF2E_gotaelves_admin;Password=GotaElvesJ11;";// + " Trusted_Connection = True;";
+                               //db.ConnectionString = ConnectionString + " Trusted_Connection = True;";
+                               db.ConnectionString = ConnectionString + "User Id=DB_A2AF2E_brollop_admin;Password=JA19maj-pass;";// + " Trusted_Connection = True;";
                                db.Dialect<MsSql2008Dialect>();
                            });
 

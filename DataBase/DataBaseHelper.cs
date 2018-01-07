@@ -23,13 +23,94 @@ namespace DataBase
             return query;
         }
 
+        public IEnumerable<LodgingType> GetLodgningTypes()
+        {
+            var lodgingTypes = Session.Query<LodgingType>().ToFuture();
+            return lodgingTypes;
+        }
+
+        public void RegisterCompany(CompanyPostDto company)
+        {
+            var newCompany = new Company();
+            using (var companyTransaction = Session.BeginTransaction())
+            {
+                Session.Save(newCompany);
+                companyTransaction.Commit();
+            }
+
+            foreach (var person in company.Persons)
+            {
+                var newPerson = new Person
+                {
+                    FirstName = person.FirstName,
+                    LastName = person.LastName,
+                    Phone = person.Phone,
+                    Email = person.Email,
+                    FoodPreferences = new List<FoodPreference>(),
+                    Going = person.Going,
+                    Company = newCompany
+                };
+                if (person.FoodPreferences != null)
+                {
+                    foreach (var foodPreference in person.FoodPreferences)
+                    {
+                        Guid foodPreferenceId;
+                        var foodPreferenceQuery = Session.Query<FoodPreference>().Where(f => (f.SwedishName.ToLower() == foodPreference.SwedishName.ToLower() && !string.IsNullOrWhiteSpace(foodPreference.SwedishName)) || (f.EnglishName.ToLower() == foodPreference.EnglishName.ToLower() && !string.IsNullOrWhiteSpace(foodPreference.EnglishName)));
+                        if (foodPreferenceQuery.Any())
+                            foodPreferenceId = foodPreferenceQuery.First().Id;
+                        else
+                        {
+                            var newFoodPreference = new FoodPreference { SwedishName = foodPreference.SwedishName, EnglishName = foodPreference.EnglishName };
+                            using (var foodPreferenceTransaction = Session.BeginTransaction())
+                            {
+                                Session.Save(newFoodPreference);
+                                foodPreferenceTransaction.Commit();
+                            }
+                            foodPreferenceId = newFoodPreference.Id;
+                        }
+                        newPerson.FoodPreferences.Add(new FoodPreference { Id = foodPreferenceId });
+                    }
+                }
+                using (var transaction = Session.BeginTransaction())
+                {
+                    Session.Save(newPerson);
+                    transaction.Commit();
+                }
+            }
+        }
+
+        public bool UpdateFoodPreference(FoodPreference foodPreference)
+        {
+            var existingFoodPreference = Session.Query<FoodPreference>().Where(f => f.Id == foodPreference.Id).FirstOrDefault();
+            if (existingFoodPreference == null) return false;
+            existingFoodPreference.SwedishName = foodPreference.SwedishName;
+            existingFoodPreference.EnglishName = foodPreference.EnglishName;
+            using (var transaction = Session.BeginTransaction())
+            {
+                Session.Update(existingFoodPreference);
+                transaction.Commit();
+            }
+            return true;
+        }
+
+        public List<FoodPreference> GetFoodPreferences()
+        {
+            var foodPreferences = Session.Query<FoodPreference>().Select(x => new FoodPreference
+            {
+                Id = x.Id,
+                EnglishName = x.EnglishName,
+                SwedishName = x.SwedishName
+            }).ToList();
+            return foodPreferences;
+        }
+
         public List<ContactResponseDto> GetContactList()
         {
             var report = new List<ContactResponseDto>();
             var contacts = Session.Query<Contact>().ToFuture();
             if (!contacts.Any())
                 return null;
-            
+
             foreach (var contact in contacts)
             {
                 var thisContact = new ContactFlatDto
@@ -40,14 +121,16 @@ namespace DataBase
                     Phone = contact.Phone
                 };
                 var existingRole = report.Where(c => c.SwedishRole == contact.SwedishRole).FirstOrDefault();
-                if (existingRole == null) {
+                if (existingRole == null)
+                {
                     report.Add(new ContactResponseDto
                     {
                         SwedishRole = contact.SwedishRole,
                         EnglishRole = contact.EnglishRole,
-                        Contacts = new List<ContactFlatDto>{thisContact }
+                        Contacts = new List<ContactFlatDto> { thisContact }
                     });
-                } else
+                }
+                else
                 {
                     for (int i = 0; i < report.Count; i++)
                     {
@@ -88,7 +171,8 @@ namespace DataBase
                 if (existContact.Any())
                 {
                     contact = existContact.First();
-                } else
+                }
+                else
                 {
                     contact = new Contact();
                 }
@@ -118,7 +202,8 @@ namespace DataBase
                     info.Name = newInfo.Name;
                     info.Swedish = newInfo.Swedish;
                     info.English = newInfo.English;
-                } else
+                }
+                else
                 {
                     info = new Info
                     {

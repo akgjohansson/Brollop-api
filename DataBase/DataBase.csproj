@@ -50,13 +50,17 @@
     <Compile Include="DataBaseHelper.cs" />
     <Compile Include="Dtos\ContactPostDto.cs" />
     <Compile Include="Dtos\ContactResponseDto.cs" />
+    <Compile Include="Dtos\FoodPreferenceDto.cs" />
     <Compile Include="Dtos\InfoDto.cs" />
     <Compile Include="Dtos\MenuPostDto.cs" />
+    <Compile Include="Dtos\CompanyPostDto.cs" />
     <Compile Include="Mapping\Mapping.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\FoodPreference.cs" />
     <Compile Include="Models\Info.cs" />
+    <Compile Include="Models\Lodging.cs" />
+    <Compile Include="Models\LodgingType.cs" />
     <Compile Include="Models\MenuItem.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

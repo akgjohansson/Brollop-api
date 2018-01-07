@@ -26,8 +26,43 @@ namespace DataBase.Mapping
             MapCompany();
             MapContact();
             MapMenuItem();
+            MapLodging();
+            MapLodgingType();
 
             return _modelMapper.CompileMappingForAllExplicitlyAddedEntities();
+        }
+
+        private void MapLodgingType()
+        {
+            _modelMapper.Class<LodgingType>(e =>
+            {
+                e.Id(x => x.Id, p => p.Generator(Generators.GuidComb));
+                e.Property(p => p.EnglishName, p => { p.NotNullable(true); });
+                e.Property(p => p.SwedishName, p => { p.NotNullable(true); });
+                e.Set(p => p.Lodgings, mapper =>
+                {
+                    mapper.Inverse(true);
+                    mapper.Cascade(Cascade.All);
+                    mapper.Key(k => k.Column("LodgingTypeId"));
+                }, p => p.OneToMany());
+            });
+        }
+
+        private void MapLodging()
+        {
+            _modelMapper.Class<Lodging>(e =>
+            {
+                e.Id(x => x.Id, p => p.Generator(Generators.GuidComb));
+                e.Property(x => x.SwedishName, p => p.NotNullable(true));
+                e.Property(p => p.EnglishName, p => p.NotNullable(true));
+                e.Property(p => p.Url, p => p.NotNullable(true));
+                e.ManyToOne(p => p.LodgingType, mapper =>
+                {
+                    mapper.Column("LodgingTypeId");
+                    mapper.NotNullable(true);
+                    mapper.Cascade(Cascade.None);
+                });
+            });
         }
 
         private void MapMenuItem()
