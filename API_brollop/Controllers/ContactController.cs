@@ -27,8 +27,8 @@ namespace API_brollop.Controllers
         [Route(""), HttpPost]
         public IHttpActionResult Post(ContactPostDto contact)
         {
-            if (string.IsNullOrWhiteSpace(contact.FirstName) || string.IsNullOrWhiteSpace(contact.LastName) || string.IsNullOrWhiteSpace(contact.Phone) || string.IsNullOrWhiteSpace(contact.Email) || string.IsNullOrWhiteSpace(contact.SwedishRole) || string.IsNullOrWhiteSpace(contact.EnglishRole))
-                return BadRequest();
+        //    if (string.IsNullOrWhiteSpace(contact.FirstName) || string.IsNullOrWhiteSpace(contact.LastName) || string.IsNullOrWhiteSpace(contact.Phone) || string.IsNullOrWhiteSpace(contact.Email) || string.IsNullOrWhiteSpace(contact.SwedishRole) || string.IsNullOrWhiteSpace(contact.EnglishRole))
+        //        return BadRequest();
             using (var helper = new DataBaseHelper())
             {
                 helper.AddOrUpdateContact(contact);

@@ -185,6 +185,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\MailManager\MailManager\MailManager\MailManager.csproj">
+      <Project>{EBBFF080-36E8-47CE-95B0-010AA89E6E35}</Project>
+      <Name>MailManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DataBase\DataBase.csproj">
       <Project>{DB24D982-0887-45C0-B107-02E98DAA4051}</Project>
       <Name>DataBase</Name>

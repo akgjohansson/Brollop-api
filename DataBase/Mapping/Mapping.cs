@@ -95,6 +95,8 @@ namespace DataBase.Mapping
             _modelMapper.Class<Company>(e =>
             {
                 e.Id(x => x.Id, p => p.Generator(Generators.GuidComb));
+                e.Property(p => p.Comment, p => p.Length(100000));
+                e.Property(p => p.AccessCode, p => p.NotNullable(true));
                 e.Set(p => p.Persons, p =>
                 {
                     p.Inverse(true);

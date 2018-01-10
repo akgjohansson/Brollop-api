@@ -10,6 +10,7 @@ namespace DataBase.Dtos
     public class CompanyPostDto
     {
         public List<PersonDto> Persons { get; set; }
+        public string Comment { get; set; }
     }
 
     public class PersonDto

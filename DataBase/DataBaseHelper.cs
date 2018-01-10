@@ -29,15 +29,27 @@ namespace DataBase
             return lodgingTypes;
         }
 
-        public void RegisterCompany(CompanyPostDto company)
+        public Company GetCompanyIdByReferenceCode(string referenceCode)
         {
-            var newCompany = new Company();
+            var companyQuery = Session.Query<Company>().Where(c => c.AccessCode == referenceCode).FirstOrDefault();
+            return companyQuery;
+        }
+
+        public Guid RegisterCompany(CompanyPostDto company, string accessCode)
+        {
+            
+            Company newCompany = new Company();
+            newCompany = new Company
+            {
+                Comment = company.Comment,
+                AccessCode = accessCode
+            };
+
             using (var companyTransaction = Session.BeginTransaction())
             {
                 Session.Save(newCompany);
                 companyTransaction.Commit();
             }
-
             foreach (var person in company.Persons)
             {
                 var newPerson = new Person
@@ -71,10 +83,48 @@ namespace DataBase
                         newPerson.FoodPreferences.Add(new FoodPreference { Id = foodPreferenceId });
                     }
                 }
-                using (var transaction = Session.BeginTransaction())
+                using (var personTransaction = Session.BeginTransaction())
                 {
                     Session.Save(newPerson);
+                    personTransaction.Commit();
+                }
+            }
+            return newCompany.Id;
+        }
+
+        private void EmptyPersonsFromDatabase(ICollection<Person> persons)
+        {
+            foreach (var person in persons)
+            {
+                var existingPerson = Session.Query<Person>().Where(p => p.FirstName == person.FirstName && p.LastName == person.LastName).FirstOrDefault();
+                if (existingPerson != null)
+                    Session.Delete(existingPerson);
+            }
+        }
+
+        public bool UpdateCompany(Guid id, CompanyPostDto company)
+        {
+            var existCompany = Session.Query<Company>().Where(c => c.Id == id).FirstOrDefault();
+            if (existCompany == null)
+                return false;
+            try
+            {
+                using (var transaction = Session.BeginTransaction())
+                {
+                    Session.Delete(existCompany);
                     transaction.Commit();
+                }
+                var output = RegisterCompany(company, existCompany.AccessCode);
+                return true;
+
+
+            } catch (Exception e)
+            {
+                using (var transaction = Session.BeginTransaction())
+                {
+                    Session.Save(existCompany);
+                    transaction.Commit();
+                    return false;
                 }
             }
         }
