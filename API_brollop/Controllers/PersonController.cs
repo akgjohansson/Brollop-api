@@ -50,27 +50,33 @@ namespace API_brollop.Controllers
         {
             using (var helper = new DataBaseHelper())
             {
-                var accessCode = "";
-                persons.Persons.ForEach(x => accessCode += $"{x.FirstName.Substring(0, 2)}{x.LastName.Substring(0, 2)}");
+                var accessCode = $"{persons.Persons[0].FirstName.Substring(0, 2)}{persons.Persons[0].LastName.Substring(0, 2)}";
+                while (helper.IsAccessCodeExist(accessCode))
+                {
+                    var random = new Random();
+                    accessCode += random.Next(10);
+                }
                 var id = helper.RegisterCompany(persons, accessCode);
                 var emails = new List<string>();
                 persons.Persons.ForEach(x => emails.Add(x.Email));
                 using (var mailManager = new MailManager.MailManager("smtp.gmail.com", 587, "ja19maj@gmail.com","ja19maj@gmail.com","JA2018-pass"))
                 {
-                    var text = $"Hej {FormatGuestList(persons.Persons)}!\n\nVad roligt det ska bli att se {GetAckusativePronoun(persons.Persons.Count)} "+
-                        $"på vårt bröllop! Håll gärna koll på hemsidan framöver, för där kommer all nödvändig information att vara med. Tveka inte "+
-                        $"att höra av {GetAckusativePronoun(persons.Persons.Count)} om det är något {GetPronoun(persons.Persons.Count)} undrar över!\n\nOm "+
-                        $"{GetPronoun(persons.Persons.Count)} vill redigera {GetPossessivePronoun(persons.Persons.Count)} anmälan, kan "+
-                        $"{GetPronoun(persons.Persons.Count)} göra det genom att gå in på anmälningssidan hos hemsidan och där trycka "+
-                        $"\"redigera anmälning\". Där fyller {GetPronoun(persons.Persons.Count)} i koden {accessCode} och trycker enter.\n\n"+
+                    var text = $"Hej {FormatGuestList(persons.Persons)}!\n\nVad roligt det ska bli att se {GetAckusativePronoun(persons.Persons.Count)} " +
+                        $"på vårt bröllop! Håll gärna koll på hemsidan framöver, för där kommer all nödvändig information att vara med. Tveka inte " +
+                        $"att höra av {GetAckusativePronoun(persons.Persons.Count)} om det är något {GetPronoun(persons.Persons.Count)} undrar över!\n\nOm " +
+                        $"{GetPronoun(persons.Persons.Count)} vill redigera {GetPossessivePronoun(persons.Persons.Count)} anmälan, kan " +
+                        $"{GetPronoun(persons.Persons.Count)} göra det genom att gå in på anmälningssidan hos hemsidan och där trycka " +
+                        $"\"redigera anmälning\". Där fyller {GetPronoun(persons.Persons.Count)} i koden {accessCode} och trycker enter.\n\n" +
                         "Vi ses på bröllopet!\n\nJohanna och Andreas";
                     mailManager.SendMail(emails, "Välkommen på bröllop!", text);
+                    string textToUs = GenerateTextToUs(persons);
+
+                    mailManager.SendMail(new List<string> { "ja19maj@gmail.com" }, "Ny anmälan", textToUs);
                 }
 
-                    return Ok(accessCode);
+                return Ok(accessCode);
             }
         }
-
 
         [Route("registration/{id:Guid}"),HttpPut]
         public IHttpActionResult Put(Guid id, CompanyPostDto company)
@@ -85,12 +91,35 @@ namespace API_brollop.Controllers
                         var text = $"Hej {FormatGuestList(company.Persons)}!\n\n{GetPossessivePronoun(company.Persons.Count, true)} anmälan är uppdaterad. Vi ses på bröllopet!\n\nVarma hälsningar,\n" +
                             $"Johanna och Andreas";
                         mailManager.SendMail(company.Persons.Select(c => c.Email), "Bröllopsanmälan är uppdaterad", text);
+
+                        var textToUs = GenerateTextToUs(company);
+                        mailManager.SendMail(new List<string> { "ja19maj@gmail.com" }, "Anmälan har uppdaterats", textToUs);
                     }
                         return Ok();
                 }
                 return BadRequest();
             }
         }
+
+        private string GenerateTextToUs(CompanyPostDto persons)
+        {
+            var guestList = "";
+            foreach (var guest in persons.Persons)
+            {
+                guestList += $"{guest.FirstName}: \n";
+                guestList += $"Kommer: ";
+                guestList += guest.Going ? "Ja\n" : "Nej\n";
+                guest.FoodPreferences.ForEach(f => guestList += $"{f.SwedishName} ");
+                guestList += $"E-post: {guest.Email}\n";
+                guestList += $"Telefon: {guest.Phone}\n\n\n";
+
+            }
+
+            var textToUs = $"Anmälan har kommit in\n\n Gäster: {FormatGuestList(persons.Persons)}\n\n" +
+                guestList;
+            return textToUs;
+        }
+
 
         private string FormatGuestList(List<PersonDto> persons)
         {

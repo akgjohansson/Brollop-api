@@ -20,7 +20,24 @@ namespace API_brollop.Controllers
                 var contacts = helper.GetContactList();
                 if (contacts == null)
                     return NotFound();
-                return Ok(contacts.OrderBy(c => c.SwedishRole).ToList());
+                var orderedContacts = contacts.OrderBy(c => c.SwedishRole).ToList();
+                var output = new List<ContactResponseDto>();
+                orderedContacts.ForEach(c =>
+                {
+                    if (c.SwedishRole.ToLower() == "brudparet")
+                        output.Add(c);
+                });
+                orderedContacts.ForEach(c =>
+                {
+                    if (c.SwedishRole.ToLower() == "toast masters")
+                        output.Add(c);
+                });
+                orderedContacts.ForEach(c =>
+                {
+                    if (c.SwedishRole.ToLower() != "brudparet" && c.SwedishRole.ToLower() != "toast masters")
+                        output.Add(c);
+                });
+                return Ok(output);
             }
         }
 

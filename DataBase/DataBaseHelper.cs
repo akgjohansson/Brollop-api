@@ -92,6 +92,11 @@ namespace DataBase
             return newCompany.Id;
         }
 
+        public bool IsAccessCodeExist(string accessCode)
+        {
+            return Session.Query<Company>().Any(x => x.AccessCode.ToLower() == accessCode.ToLower());
+        }
+
         private void EmptyPersonsFromDatabase(ICollection<Person> persons)
         {
             foreach (var person in persons)
