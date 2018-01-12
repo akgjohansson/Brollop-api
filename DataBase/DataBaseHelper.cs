@@ -111,6 +111,12 @@ namespace DataBase
             return newCompany.Id;
         }
 
+        public List<Company> GetAllCompanies()
+        {
+            var companies = Session.Query<Company>().ToList();
+            return companies;
+        }
+
         public bool IsAccessCodeExist(string accessCode)
         {
             return Session.Query<Company>().Any(x => x.AccessCode.ToLower() == accessCode.ToLower());
