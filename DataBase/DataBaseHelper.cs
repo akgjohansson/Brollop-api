@@ -23,6 +23,25 @@ namespace DataBase
             return query;
         }
 
+        public void RegisterLoadingOfPage()
+        {
+            using (var transaction = Session.BeginTransaction())
+            {
+                var loading = new Loadings
+                {
+                    Time = DateTime.Now
+                };
+                Session.Save(loading);
+                transaction.Commit();
+            }
+        }
+
+        public int GetNumberOfLoadings()
+        {
+            var loadings = Session.Query<Loadings>().ToList().Count;
+            return loadings;
+        }
+
         public IEnumerable<LodgingType> GetLodgningTypes()
         {
             var lodgingTypes = Session.Query<LodgingType>().ToFuture();

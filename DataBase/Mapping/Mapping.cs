@@ -28,8 +28,18 @@ namespace DataBase.Mapping
             MapMenuItem();
             MapLodging();
             MapLodgingType();
+            MapLoadings();
 
             return _modelMapper.CompileMappingForAllExplicitlyAddedEntities();
+        }
+
+        private void MapLoadings()
+        {
+            _modelMapper.Class<Loadings>(e =>
+            {
+                e.Id(x => x.Id, p => p.Generator(Generators.GuidComb));
+                e.Property(x => x.Time, x => x.NotNullable(true));
+            });
         }
 
         private void MapLodgingType()

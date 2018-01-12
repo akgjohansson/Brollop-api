@@ -59,6 +59,7 @@
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\FoodPreference.cs" />
     <Compile Include="Models\Info.cs" />
+    <Compile Include="Models\Loadings.cs" />
     <Compile Include="Models\Lodging.cs" />
     <Compile Include="Models\LodgingType.cs" />
     <Compile Include="Models\MenuItem.cs" />

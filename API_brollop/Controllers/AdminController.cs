@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DataBase;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -16,6 +17,16 @@ namespace API_brollop.Controllers
             if (password == "JA2018-pass")
                 return Ok();
             return BadRequest();
+        }
+
+        [Route("loading"),HttpGet]
+        public IHttpActionResult GetLoadings()
+        {
+            using (var helper = new DataBaseHelper())
+            {
+                var loadings = helper.GetNumberOfLoadings();
+                return Ok(loadings);
+            }
         }
     }
 }

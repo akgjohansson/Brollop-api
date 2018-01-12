@@ -18,6 +18,7 @@ namespace API_brollop.Controllers
         {
             using (var helper = new DataBaseHelper())
             {
+                helper.RegisterLoadingOfPage();
                 var menuItems = helper.GetMenuItems();
                 if (menuItems == null)
                     return NotFound();
