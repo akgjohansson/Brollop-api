@@ -18,6 +18,9 @@ namespace API_brollop.Controllers
         {
             using (var helper = new DataBaseHelper())
             {
+                //var tja = User;
+                //var hej = RequestContext.Principal;
+                
                 helper.RegisterLoadingOfPage();
                 var menuItems = helper.GetMenuItems();
                 if (menuItems == null)

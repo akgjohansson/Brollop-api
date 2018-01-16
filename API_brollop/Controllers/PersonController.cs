@@ -117,7 +117,7 @@ namespace API_brollop.Controllers
                         $"wedding! Please keep an eye at the website, we will post all necessary information there. Don't hesitate to contact" +
                         $" us if there is anything that is unclear.\n\nYou can edit the registration by going to the registration page at the " +
                         $"website and select 'edit'. There you fill the code {accessCode} and press enter to edit\n\n" +
-                        $"{byeTextEng}\n\nJohanna och Andreas";
+                        $"{byeTextEng}\n\nJohanna and Andreas";
                     mailManager.SendMail(emails, "Välkommen på bröllop!", text);
                     string textToUs = GenerateTextToUs(persons);
 
