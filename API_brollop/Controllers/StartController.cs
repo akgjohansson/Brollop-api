@@ -23,7 +23,7 @@ namespace API_brollop.Controllers
             var weddingDate = new DateTime(2018, 05, 19);
             var today = DateTime.Today;
             var totalDays = (weddingDate - today).TotalDays;
-            return Ok(totalDays);
+            return Ok(totalDays-1);
         }
 
         [Route("builddb/{id:Guid}"), HttpPost]
