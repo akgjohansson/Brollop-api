@@ -1,4 +1,5 @@
-﻿using DataBase;
+﻿using ChamberOfSecrets;
+using DataBase;
 using DataBase.Dtos;
 using DataBase.Models;
 using MailManager;
@@ -15,6 +16,11 @@ namespace API_brollop.Controllers
     [RoutePrefix("person"), EnableCors(origins: "http://localhost:9000", headers: "*", methods: "*")]
     public class PersonController : ApiController
     {
+        private SecretContainer _secretContainer;
+        public PersonController()
+        {
+            _secretContainer = new SecretContainer("brollop_mail");
+        }
         [Route("{referenceCode}"),HttpGet]
         public IHttpActionResult Get(string referenceCode)
         {
@@ -104,7 +110,7 @@ namespace API_brollop.Controllers
                 var goingTextEng = going ? "It's nice to know you'll be at the" : "Too bad too hear you cannot attend our";
                 var byeTextSwe = going ? "Vi ses på bröllopet!" : "Ha det bra!";
                 var byeTextEng = going ? "See you at the wedding!" : "Cheers!";
-                using (var mailManager = new MailManager.MailManager("smtp.gmail.com", 587, "ja19maj@gmail.com","ja19maj@gmail.com","JA2018-pass"))
+                using (var mailManager = new MailManager.MailManager("smtp.gmail.com", 587, _secretContainer.UserName,_secretContainer.UserName,_secretContainer.Password))
                 {
                     var text = $"==> English below\n\nHej {FormatGuestList(persons.Persons)}!\n\n{goingTextSwe} " +
                         $"på vårt bröllop! Håll gärna koll på hemsidan framöver, för där kommer all nödvändig information att vara med. Tveka inte " +
@@ -121,7 +127,7 @@ namespace API_brollop.Controllers
                     mailManager.SendMail(emails, "Välkommen på bröllop!", text);
                     string textToUs = GenerateTextToUs(persons);
 
-                    mailManager.SendMail(new List<string> { "ja19maj@gmail.com" }, "Ny anmälan", textToUs);
+                    mailManager.SendMail(new List<string> { _secretContainer.UserName }, "Ny anmälan", textToUs);
                 }
 
                 return Ok(accessCode);
@@ -136,14 +142,14 @@ namespace API_brollop.Controllers
                 bool success = helper.UpdateCompany(id, company);
                 if (success)
                 {
-                    using (var mailManager = new MailManager.MailManager("smtp.gmail.com", 587, "ja19maj@gmail.com", "ja19maj@gmail.com", "JA2018-pass"))
+                    using (var mailManager = new MailManager.MailManager("smtp.gmail.com", 587, _secretContainer.UserName, _secretContainer.UserName, _secretContainer.Password))
                     {
                         var text = $"Hej {FormatGuestList(company.Persons)}!\n\n{GetPossessivePronoun(company.Persons.Count, true)} anmälan är uppdaterad. Vi ses på bröllopet!\n\nVarma hälsningar,\n" +
                             $"Johanna och Andreas";
                         mailManager.SendMail(company.Persons.Select(c => c.Email), "Bröllopsanmälan är uppdaterad", text);
 
                         var textToUs = GenerateTextToUs(company);
-                        mailManager.SendMail(new List<string> { "ja19maj@gmail.com" }, "Anmälan har uppdaterats", textToUs);
+                        mailManager.SendMail(new List<string> { _secretContainer.UserName }, "Anmälan har uppdaterats", textToUs);
                     }
                         return Ok();
                 }

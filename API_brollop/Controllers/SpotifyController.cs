@@ -36,6 +36,11 @@ namespace API_brollop.Controllers
             IEnumerable<Dictionary<string, dynamic>> jsonTracks = JsonConvert.DeserializeObject<IEnumerable<Dictionary<string, dynamic>>>(data.Tracks["items"].ToString());
             foreach (var item in jsonTracks)
             {
+                List<Dictionary<string, dynamic>> artistList = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(item["artists"].ToString());
+                var halloj = artistList.Select(a => a["name"].ToString()).ToList();
+                //var testtest = artistList.Select(a => Convert.ToString(a)).ToList();
+                //var tjo = ((IEnumerable<string>)artistList.Select(a => a["name"].ToString())).ToList();
+                //var hej = (List<string>)((IEnumerable<string>)artistList.Select(a => a["name"].ToString())).ToList();
                 spotify.Tracks.Add(new Track
                 {
                     Href = item["href"],
@@ -43,14 +48,30 @@ namespace API_brollop.Controllers
                     Id = item["id"],
                     Duration_ms = Convert.ToInt32(item["duration_ms"]),
                     Type = item["type"],
-                    Album = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(item["album"].ToString())["name"]
+                    Album = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(item["album"].ToString())["name"],
+                    Artist = ConvertToReadableList(artistList.Select(a => a["name"].ToString()).ToList())
                 });
+                
             }
 
             if (response.StatusCode == HttpStatusCode.OK)
                 return Ok(spotify);
             else
                 return BadRequest(response.Content.ToString());
+        }
+
+        private string ConvertToReadableList(List<dynamic> list)
+        {
+            var output = "";
+            for (int i = 0; i < list.Count; i++)
+            {
+                output += list[i].ToString();
+                if (i < list.Count - 2)
+                    output += ", ";
+                else if (i == list.Count - 2)
+                    output += " och ";
+            }
+            return output;
         }
     }
 }

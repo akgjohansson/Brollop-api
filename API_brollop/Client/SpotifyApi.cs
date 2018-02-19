@@ -1,5 +1,6 @@
 ﻿using API_brollop.Common;
 using API_brollop.Extensions;
+using ChamberOfSecrets;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Specialized;
@@ -22,9 +23,10 @@ namespace API_brollop.Client
 
         public SpotifyApi()
         {
+            var spotifyCredentials = new SecretContainer("spotify");
             _baseUri = new Uri("https://api.spotify.com");
-            _clientID = "a39a0a48191c4f76a171a64aab87a912";
-            _clientSecret = "e3c42cb307304e6f9c1e7c047a9fbde4";
+            _clientID = spotifyCredentials.ClientId;
+            _clientSecret = spotifyCredentials.ClientSecret;
             _client = new HttpClient();
             _clientByteArray = new UTF8Encoding().GetBytes($"{_clientID}:{_clientSecret}");
             GetToken();
@@ -59,7 +61,7 @@ namespace API_brollop.Client
                     {"grant_type", "refresh_token" },
                     {"refresh_token", _token.Access_token }
                 };
-                var data = webClient.UploadValues("https//accounts.spotify.com/api/token", "POST", col);
+                var data = webClient.UploadValues("https://accounts.spotify.com/api/token", "POST", col);
                 _token = JsonConvert.DeserializeObject<Token>(Encoding.UTF8.GetString(data));
             }
         }

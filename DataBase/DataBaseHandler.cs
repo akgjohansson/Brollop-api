@@ -1,4 +1,5 @@
-﻿using NHibernate;
+﻿using ChamberOfSecrets;
+using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
@@ -41,15 +42,16 @@ namespace DataBase
 
         private static ISession OpenSession()
         {
+            var dbCredentials = new SecretContainer("brollop_db");
             bool doesDBExist = false;
             //var constr = ConfigurationManager.ConnectionStrings["MyDbConn"].ToString();
             var password = new SecureString();
-            foreach (char character in "JA19maj-pass")
+            foreach (char character in dbCredentials.Password)
             {
                 password.AppendChar(character);
             }
             password.MakeReadOnly();
-            var credentials = new SqlCredential("DB_A2AF2E_brollop_admin", password);
+            var credentials = new SqlCredential(dbCredentials.UserName, password);
             using (SqlConnection con = new SqlConnection(ConnectionString, credentials))
             {
                 using (SqlCommand com = new SqlCommand($"select name from sys.databases where name = '{Databasename}';", con))
@@ -79,13 +81,13 @@ namespace DataBase
 
         public static Configuration Configure()
         {
-
+            var dbCredentials = new SecretContainer("brollop_db");
             Configuration cfg = new Configuration()
                            .DataBaseIntegration(db =>
                            {
 
                                //db.ConnectionString = ConnectionString + " Trusted_Connection = True;";
-                               db.ConnectionString = ConnectionString + "User Id=DB_A2AF2E_brollop_admin;Password=JA19maj-pass;";// + " Trusted_Connection = True;";
+                               db.ConnectionString = ConnectionString + $"User Id={dbCredentials.UserName};Password={dbCredentials.Password};";// + " Trusted_Connection = True;";
                                db.Dialect<MsSql2008Dialect>();
                            });
 

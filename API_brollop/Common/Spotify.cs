@@ -7,7 +7,6 @@ namespace API_brollop.Common
 {
     public class Spotify
     {
-        public Artists Artists { get; set; }
         public List<Track> Tracks { get; set; }
     }
 }

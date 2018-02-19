@@ -184,13 +184,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Client\ISpotifyApi.cs" />
     <Compile Include="Client\SpotifyApi.cs" />
-    <Compile Include="Common\Artists.cs" />
-    <Compile Include="Common\External_Url.cs" />
-    <Compile Include="Common\Href.cs" />
-    <Compile Include="Common\Image.cs" />
-    <Compile Include="Common\Item.cs" />
     <Compile Include="Common\Spotify.cs" />
-    <Compile Include="Common\Test.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="Common\Track.cs" />
     <Compile Include="Controllers\AdminController.cs" />
@@ -228,6 +222,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\ChamberOfSecrets\ChamberOfSecrets.csproj">
+      <Project>{7BC7EA5C-9F79-4654-B752-8BDA5F864F19}</Project>
+      <Name>ChamberOfSecrets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\MailManager\MailManager\MailManager\MailManager.csproj">
       <Project>{EBBFF080-36E8-47CE-95B0-010AA89E6E35}</Project>
       <Name>MailManager</Name>

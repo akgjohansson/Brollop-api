@@ -69,6 +69,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ChamberOfSecrets\ChamberOfSecrets.csproj">
+      <Project>{7BC7EA5C-9F79-4654-B752-8BDA5F864F19}</Project>
+      <Name>ChamberOfSecrets</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

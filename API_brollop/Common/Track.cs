@@ -13,5 +13,6 @@ namespace API_brollop.Common
         public int Duration_ms { get; set; }
         public string Type { get; set; }
         public string Album { get; set; }
+        public string Artist { get; set; }
     }
 }
